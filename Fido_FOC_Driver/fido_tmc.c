@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+#include "TMC4671.h"
 
 // SPI Defines
 // We are going to use SPI 0, and allocate it to the following GPIO pins
@@ -12,11 +13,14 @@
 #define PIN_MOSI 19
 
 
+void tmc4671_readWriteSPI(uint16_t icID, uint8_t *data, size_t dataLength){
+    printf("hello wo");
+}
 
 int main()
 {
     stdio_init_all();
-
+    
     // SPI initialisation. This example will use SPI at 1MHz.
     spi_init(SPI_PORT, 1000*1000);
     gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
@@ -31,6 +35,7 @@ int main()
 
     while (true) {
         printf("Hello, world!\n");
+        tmc4671_getActualVelocity(0);
         sleep_ms(1000);
     }
 }
