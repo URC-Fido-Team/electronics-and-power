@@ -14,7 +14,12 @@
 
 
 void tmc4671_readWriteSPI(uint16_t icID, uint8_t *data, size_t dataLength){
-    printf("hello wo");
+
+	uint8_t read_buffer[5];
+    printf("data to send: %d \n", data);
+	spi_write_read_blocking(SPI_PORT, data, read_buffer, 2*sizeof(data));
+    printf("data recieved: %d \n", read_buffer);
+	data = read_buffer;
 }
 
 int main()
@@ -35,7 +40,8 @@ int main()
 
     while (true) {
         printf("Hello, world!\n");
-        tmc4671_getActualVelocity(0);
+        int32_t data = tmc4671_readRegister(0, 0x00);
+		printf("data %d", data);
         sleep_ms(1000);
     }
 }
