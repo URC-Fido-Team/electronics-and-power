@@ -14,12 +14,27 @@
 
 
 void tmc4671_readWriteSPI(uint16_t icID, uint8_t *data, size_t dataLength){
+    gpio_put(PIN_CS, 0);
 
-	uint8_t read_buffer[5];
-    printf("data to send: %d \n", data);
-	spi_write_read_blocking(SPI_PORT, data, read_buffer, 2*sizeof(data));
-    printf("data recieved: %d \n", read_buffer);
-	data = read_buffer;
+	uint8_t read_buffer[5] = { 0 };
+    printf("data HEX SENT: ");
+    for (size_t i = 0; i < dataLength; i++) {
+        printf("%02x", data[i]);  // Print each byte in hexadecimal
+    }
+    printf("  |  ");
+
+	int value = spi_write_read_blocking(SPI_PORT, data, &read_buffer[0], dataLength);
+    printf("Bytes written/read: %d\n", value);
+
+    printf("data RECIEVED: ");
+    for (size_t i = 0; i < dataLength; i++) {
+        printf("%02x", read_buffer[i]);  // Print each byte in hexadecimal
+    }
+    printf("\n");
+
+    data = read_buffer;
+
+    gpio_put(PIN_CS, 1);
 }
 
 int main()
@@ -39,9 +54,8 @@ int main()
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
     while (true) {
-        printf("Hello, world!\n");
-        int32_t data = tmc4671_readRegister(0, 0x00);
-		printf("data %d", data);
+        tmc4671_writeRegister(0, 0x21, 0x55555555);
+        tmc4671_readRegister(0, 0x21);
         sleep_ms(1000);
     }
 }
