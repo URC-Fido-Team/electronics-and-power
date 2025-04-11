@@ -37,8 +37,7 @@ void tmc4671_readWriteSPI(uint16_t icID, uint8_t *data, size_t dataLength){
     gpio_put(PIN_CS, 1);
 }
 
-int main()
-{
+void pico_init_() {
     stdio_init_all();
     
     // SPI initialisation. This example will use SPI at 1MHz.
@@ -53,9 +52,26 @@ int main()
     gpio_put(PIN_CS, 1);
     // For more examples of SPI use see https://github.com/raspberrypi/pico-examples/tree/master/spi
 
+}
+
+void tmc_init_() {
+    tmc4671_writeRegister(0, TMC4671_MOTOR_TYPE_N_POLE_PAIRS, 0x003041); // Set motor type and number of pole pairs
+}
+
+int main()
+{
+    pico_init_();
+    tmc_init_();
+
+    
+
     while (true) {
-        tmc4671_writeRegister(0, 0x21, 0x55555555);
-        tmc4671_readRegister(0, 0x21);
-        sleep_ms(1000);
+        tmc4671_readRegister(0, TMC4671_MOTOR_TYPE_N_POLE_PAIRS);
+        tmc4671_writeRegister(0, TMC4671_OPENLOOP_MODE, 0x00000001);
+        tmc4671_writeRegister(0, TMC4671_OPENLOOP_ACCELERATION, 0x00000100);
+        tmc4671_writeRegister(0, TMC4671_OPENLOOP_VELOCITY_TARGET, 0x00000100);
+        tmc4671_readRegister(0, TMC4671_OPENLOOP_VELOCITY_TARGET);
+        printf("Is working\n");
+        sleep_ms(4000);
     }
 }
